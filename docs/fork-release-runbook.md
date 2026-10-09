@@ -302,7 +302,62 @@ git rebase upstream/main
 4. 不要为了同步上游而改动与任务无关的文件。
 5. 每次修正都要在 `CHANGELOG.md`、`docs/release/` 或本文件的修订记录中留下痕迹。
 
-## 9. 修订记录
+## 9. 将来如何升级和使用
+
+### 9.1 当前 v1.7.2 的更新行为
+
+当前更新器常量仍指向官方仓库：
+
+```text
+https://github.com/BigPizzaV3/CodexPlusPlus/releases/latest/download/latest.json
+```
+
+因此 v1.7.2 的应用内“检查更新”仍会检查官方版本，不会把本 fork 的 Release 当作更新来源。
+
+现在可靠的升级方式是：
+
+1. 打开 fork Release 页面；
+2. 下载最新 Windows setup 或 ZIP；
+3. 覆盖安装或替换目录；
+4. 用本文第 7 节的方法核验 SHA256。
+
+### 9.2 推荐的长期方案
+
+如果官方长期不修，建议让 fork 自己维护更新源，而不是每次手动下载。
+
+需要修改：
+
+```text
+crates/codex-plus-core/src/update.rs
+```
+
+将 `DEFAULT_LATEST_JSON_URL` 指向本 fork：
+
+```text
+https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
+```
+
+修改后需要：
+
+1. 提升 fork 版本号；
+2. 重新跑 `cargo test`；
+3. 重新按第 6 节构建并发布；
+4. 确认 Release 的 `latest.json` 是公开可读且指向 fork。
+
+完成后，以后在 Codex++ 内点“检查更新”即可看到 fork 自己的新版本。
+
+### 9.3 什么时候回到官方
+
+出现以下任一情况时，应优先回到官方版本：
+
+- issue #2424 / PR #2425 已被官方正式合并；
+- 官方代码已包含明文 `encrypted_content` 透传；
+- fork 剩余变化只剩版本号或发布元数据；
+- 上游新版本已经修复同一错误。
+
+回官方前先备份配置和会话数据；不要在不了解差异的情况下来回覆盖安装。
+
+## 10. 修订记录
 
 ### 2026-10-09
 
