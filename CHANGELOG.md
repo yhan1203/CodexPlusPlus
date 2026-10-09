@@ -1,5 +1,13 @@
 # 更新日志
 
+## Fork 补丁（本仓库独有）
+
+以下改动不来自上游 `BigPizzaV3/CodexPlusPlus`，与上游同步时需要重新叠加：
+
+- 修复多代理 v2 在 Chat Completions 上游报 `unsupported_encrypted_agent_content`：`agent_message` 内明文 `encrypted_content` payload 按原顺序转换为 Chat 文本；无法转换的 opaque 内容与独立 `encrypted_content` 项仍明确失败，不静默丢弃。
+- v2 自定义模型（`multiAgentVersion: v2`）自动暴露 `ultra` 推理档位。
+- Chat Completions 方言收到 `ultra` 时按上游能力兜底映射（通用 / DeepSeek / Kimi 为 `max`，OpenRouter 为 `xhigh`）。
+
 ## 未发布
 
 ## 1.7.6 - 2026-10-11
