@@ -1,5 +1,10 @@
 # 更新日志
 
+## 1.7.2 - 2026-10-09
+
+- 修复多代理 v2 在 Chat Completions 上游报 `unsupported_encrypted_agent_content`：明文 `encrypted_content` agent payload 会按原顺序作为文本转发。
+- 无法转换的 opaque 加密内容和独立 `encrypted_content` 项仍明确失败，不静默丢弃。
+
 ## 1.7.1 - 2026-10-09
 
 - 移除自由拖动、磁吸、弹性让位和布局记忆，恢复原生面板布局；旧配置不再启用此功能，升级后需完整重启 Codex++。
