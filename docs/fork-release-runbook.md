@@ -386,6 +386,18 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 
 ## 10. 修订记录
 
+### 2026-10-12（发布 v1.7.8）
+
+- tag `v1.7.8` → 提交 `329e7bf`；Release：https://github.com/yhan1203/CodexPlusPlus/releases/tag/v1.7.8
+- 内容：安装器覆盖安装时请求正在运行的 Codex++ 正常退出（见上一条修订）；版本号 1.7.7 → 1.7.8。
+- 发布前验证：`PR build artifacts` run `38155095750`（commit `80268fa`）已由真实 makensis 编译过安装脚本，Windows/macOS 两个 job 均 success。
+- 构建：`Release assets` workflow_dispatch（run `38157496795`，`platform=windows`）Windows 产物成功；`latest-json` job 仍因缺 macOS DMG 失败，按第 6.4 节手动生成 Windows-only `latest.json` 后发布。
+- 附件与校验值：
+  - `CodexPlusPlus-1.7.8-windows-x64-setup.exe`（22,446,012 B）sha256 `2060bb84301624ef0c4674f3a88c0f6291167ae3424023359ca26cf78c1ded68`
+  - `CodexPlusPlus-1.7.8-windows-x64.zip`（30,785,561 B）sha256 `cd8558504150e500617a7c2221fdd75d254133a58f1e4777692be4a418a95826`
+  - `latest.json`（2,206 B）sha256 `318fdc61b9d07bf56c900e6e7493f45853db24b904ca0f896c11e0ef1ec207cb`
+- 下载 zip 解包核对：`codex-plus-plus.exe` 的 `ProductVersion`/`FileVersion` 均为 `1.7.8`，本地 SHA256 与 GitHub 上报 digest 一致；公开发布后 `releases/latest/download/latest.json` 返回 `v1.7.8`。
+
 ### 2026-10-12（安装器请求 Codex++ 正常退出）
 
 - 现象：覆盖安装时 Codex++ 仍在运行，安装器等 10 秒后弹「请从系统托盘退出 Codex++」，Win11 托盘图标默认隐藏在折叠区，用户被卡住。
