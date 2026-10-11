@@ -361,9 +361,11 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 
 ### 2026-10-11
 
-- 补齐 `ultra` 推理档位的协议映射：通用上游透传 `ultra`，DeepSeek/Kimi 映射为 `max`，OpenRouter 映射为 `xhigh`。
+- 修正 Ultra 认知：Ultra 是 Codex 的主动子 agent 档位，不是普通推理档。
+- Custom 模型的原生描述若已声明 `multiAgentVersion: v2`，渲染层现在会补 Ultra；v1/未知版本仍保留原启发式。
+- Chat 代理收到原样 `ultra` 时按官方解析规则兜底映射为 `max`，不再把 `ultra` 原样发给不支持该字段的上游。
 - 新增 `responses_request_maps_ultra_reasoning_effort` 回归测试；`protocol_proxy` 150 例通过。
-- 未修改 UI 默认档位，避免给不支持 `ultra` 的模型强塞选项；仅为已经存在该档位的模型补齐转发。
+- 未修改 v1/未知多 agent 契约模型的默认档位；只有核心明确声明 v2 的 Custom 模型才自动补 Ultra。
 
 ### 2026-10-09
 

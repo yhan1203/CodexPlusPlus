@@ -1523,7 +1523,7 @@ fn responses_request_maps_ultra_reasoning_effort() {
         "input": "hi"
     }))
     .unwrap();
-    assert_eq!(gpt["reasoning_effort"], "ultra");
+    assert_eq!(gpt["reasoning_effort"], "max");
 
     let deepseek = responses_to_chat_completions(json!({
         "model": "deepseek-reasoner",

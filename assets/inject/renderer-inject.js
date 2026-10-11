@@ -9590,16 +9590,17 @@
     return value && typeof value === "object" ? value : null;
   }
 
-  function modelReasoningEfforts(modelName) {
+  function modelReasoningEfforts(modelName, descriptor = null) {
     const supported = codexPlusModelMetadata(modelName)?.supportedReasoningEfforts;
     if (Array.isArray(supported) && supported.length > 0) {
       const efforts = supported.map((entry) => ({ ...entry }));
       const hasMax = efforts.some((e) => e.reasoningEffort === "max");
       const hasUltra = efforts.some((e) => e.reasoningEffort === "ultra");
+      const hasV2 = String(descriptor?.multiAgentVersion || descriptor?.multi_agent_version || "").toLowerCase() === "v2";
       if (!hasMax) efforts.push({ reasoningEffort: "max", description: "Maximum reasoning depth for the hardest problems" });
       if (!hasUltra) {
         const shouldAddUltra = /sol|terra|gpt-5\.6|gpt-5\.5|gpt-5\.4|deepseek/i.test(String(modelName || ""));
-        if (shouldAddUltra || efforts.length >= 4) efforts.push({ reasoningEffort: "ultra", description: "Maximum reasoning with automatic task delegation" });
+        if (hasV2 || shouldAddUltra || efforts.length >= 4) efforts.push({ reasoningEffort: "ultra", description: "Maximum reasoning with automatic task delegation" });
       }
       return efforts;
     }
@@ -9617,7 +9618,7 @@
       }
     }
     if (Array.isArray(metadata.supportedReasoningEfforts) && metadata.supportedReasoningEfforts.length > 0) {
-      const nextEfforts = modelReasoningEfforts(modelName);
+      const nextEfforts = modelReasoningEfforts(modelName, descriptor);
       if (JSON.stringify(descriptor.supportedReasoningEfforts || []) !== JSON.stringify(nextEfforts)) {
         descriptor.supportedReasoningEfforts = nextEfforts;
         changed = true;
