@@ -145,6 +145,7 @@ fn chat_conversion_rejects_opaque_encrypted_agent_content_without_echoing_payloa
                 json!({"model":"custom-model","input":input}), standard,
             ).expect_err("opaque encrypted agent 内容必须明确拒绝，不能静默丢弃或当作文本转发");
             let diagnostic = format!("{error:#}");
+            assert!(diagnostic.contains("unsupported_encrypted_agent_content"));
             assert!(!diagnostic.contains(opaque));
         }
     }
