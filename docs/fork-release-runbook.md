@@ -386,6 +386,15 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 
 ## 10. 修订记录
 
+### 2026-10-12（安装器请求 Codex++ 正常退出）
+
+- 现象：覆盖安装时 Codex++ 仍在运行，安装器等 10 秒后弹「请从系统托盘退出 Codex++」，Win11 托盘图标默认隐藏在折叠区，用户被卡住。
+- 修复：主程序新增 `--quit-for-install`。安装器拉起的第二个进程只写 `install-quit-<port>.request` 后立即返回（不启动界面）；正在运行的实例在窗口激活监听线程里消费该请求，走与托盘「退出程序」完全相同的清理路径（恢复系统浏览器、清理后台服务）后退出。
+- 安装器：初始 10 秒等待超时后，先用 `Exec '"$INSTDIR\codex-plus-plus.exe" --quit-for-install'` 请求正常退出，再给 30 秒；仍不退出才回退到手动托盘提示。仍然不用 taskkill，也不强制结束进程。
+- 已知限制：本改动之前安装的旧版本不认识该参数（第二个进程被单实例守卫直接结束），所以从 v1.7.7 升到含本修复的版本仍需手动退出一次；再之后的版本升级可自动完成。
+- 验证：`cargo test -p codex-plus-core --test installers` 13 例通过；`cargo test -p codex-plus-manager --bin codex-plus-plus` 2 例通过（含新增的参数匹配用例）；`--quit-for-install` 字符串同时被安装器源码契约测试卡住。
+- 本机构建提示：仓库内没有前端 `dist/` 时 `tauri::generate_context!` 会报 `frontendDist ../dist doesn't exist`，可用 `TAURI_CONFIG='{"build":{"frontendDist":"../src"}}'` 临时覆盖只跑 Rust 编译与单测，无需安装前端依赖。
+
 ### 2026-10-11（发布 v1.7.7）
 
 - tag `v1.7.7` → 提交 `7767567`；Release：https://github.com/yhan1203/CodexPlusPlus/releases/tag/v1.7.7
