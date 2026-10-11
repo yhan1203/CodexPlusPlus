@@ -302,6 +302,33 @@ git rebase upstream/main
 4. 不要为了同步上游而改动与任务无关的文件。
 5. 每次修正都要在 `CHANGELOG.md`、`docs/release/` 或本文件的修订记录中留下痕迹。
 
+### 8.1 1.7.6 同步的冲突处置（可复用结论）
+
+同步到上游 `f035c3c`（官方 `v1.7.6`）时的冲突面与处置：
+
+| 文件 | 处置 |
+| --- | --- |
+| `Cargo.toml`、`Cargo.lock`、`package.json`、`package-lock.json` | 一律取上游版本号，禁止把 fork 旧版本号带回来 |
+| `CHANGELOG.md` | 保留上游完整条目，仅在顶部追加「Fork 补丁」段 |
+| `docs/release/v1.7.2-notes.md` | 该文件名已被官方正式占用，fork 让出；fork 说明保留在本文件 |
+| `crates/codex-plus-core/src/protocol_proxy.rs` | 手动合并，见下 |
+
+`protocol_proxy.rs` 的合并要点：
+
+1. 保留上游新增能力：`remove_unsupported_native_search`、`expand_local_compaction_history`、`input_has_native_compaction` 与 `UnsupportedNativeWebSearch`。
+2. 删除上游「所有 `encrypted_content` 一律拒绝」的预检（`input_has_encrypted_agent_content`）——这正是本 fork 要修的行为。
+3. 保留顶层独立 `{"type":"encrypted_content"}` 的明确拒绝，以及 `encrypted_content_value_is_opaque` 的 fail loud。
+4. 上游已用 `expand_local_compaction_history` 处理压缩历史回放，不要再恢复旧提交里重复的 `Some(COMPACTION_OUTPUT_TYPE)` 分支。
+5. `append_responses_input` / `append_responses_item` / `responses_content_to_chat_content` 返回 `anyhow::Result`，错误一路上抛到 launcher。
+
+构建环境提示：上游 1.7.6 引入 `sherpa-onnx-sys`，其构建脚本不读代理环境变量。直连 GitHub 失败时，先手动把原生库缓存到 `target/sherpa-onnx-prebuilt/`，构建脚本会直接复用：
+
+```powershell
+curl.exe -L --proxy http://127.0.0.1:11808 -C - `
+  -o "target/sherpa-onnx-prebuilt/sherpa-onnx-v1.13.8-win-x64-static-MT-Release-lib.tar.bz2" `
+  "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-v1.13.8-win-x64-static-MT-Release-lib.tar.bz2"
+```
+
 ## 9. 将来如何升级和使用
 
 ### 9.1 当前 v1.7.2 的更新行为
@@ -358,6 +385,15 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 回官方前先备份配置和会话数据；不要在不了解差异的情况下来回覆盖安装。
 
 ## 10. 修订记录
+
+### 2026-10-11（同步上游 v1.7.6）
+
+- 上游已发布 `v1.7.6`，`main` 推进到 `f035c3c`；确认 PR #2425 仍未合并，上游依旧对所有 `encrypted_content` 直接拒绝，因此 fork 补丁继续保留。
+- 用 `git rebase upstream/main` 把 5 个 fork 提交重放到 `f035c3c` 之上，未做 squash。
+- 重放后的 fork 提交：`d3d9494`（明文 encrypted_content 透传）、`97de94f` 与 `85fb0a9`（runbook、更新路径文档）、`7f80a49`（ultra 跨方言映射）、`898659a`（v2 Custom 模型暴露 Ultra）。
+- 版本号随上游保持 `1.7.6`；fork 尚未基于该基线发版，下次发版需使用高于官方的版本号并新建 `docs/release/<新版本>-notes.md`。
+- 同步前状态备份在分支 `codex/backup-pre-upstream-sync-20261011`（旧 `1148c8a`）。
+- 验证结果：`protocol_proxy` 160 例、`cdp_bridge` 163 例通过；`node scripts/assemble-renderer-inject.mjs --check` 产物与分片一致；`git diff --check` 干净。
 
 ### 2026-10-11
 
