@@ -386,6 +386,19 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 
 ## 10. 修订记录
 
+### 2026-10-11（发布 v1.7.7）
+
+- tag `v1.7.7` → 提交 `7767567`；Release：https://github.com/yhan1203/CodexPlusPlus/releases/tag/v1.7.7
+- 版本号从上游 `1.7.6` 提到 `1.7.7`（`Cargo.toml`、`Cargo.lock`、`package.json`、`package-lock.json`、`tauri.conf.json`），保证高于官方版本。
+- 推送方式：先把旧历史备份分支 `codex/backup-pre-upstream-sync-20261011` 推到 origin，再用 `--force-with-lease` 重写 `main`（rebase 后必须强推）。
+- 构建：`Release assets` workflow_dispatch（run `38152529523`，`platform=windows`）成功；`latest-json` job 依旧因缺 macOS DMG 失败，按第 6.4 节手动生成 Windows-only `latest.json` 后发布。
+- 附件与校验值：
+  - `CodexPlusPlus-1.7.7-windows-x64-setup.exe`（22,443,402 B）sha256 `a6ffb5ae2fb6ecfac1afcd1ff25e283e7cc85998c15d9450b70ac588c42f2747`
+  - `CodexPlusPlus-1.7.7-windows-x64.zip`（30,783,191 B）sha256 `1b1db8e939fc83ac45ccacac4599da48e3f7043bd1fe8dae8cce57421e3f139b`
+  - `latest.json`（2,457 B）sha256 `5a71e454b0103ae3130671f282c848b6f4fed4d79bf18eb1559d06f4e298b392`
+- 下载 zip 解包核对：内含 `codex-plus-plus.exe`，`ProductVersion`/`FileVersion` 均为 `1.7.7`；本地 SHA256 与 GitHub 上报 digest 一致。
+- 公开发布后的 `releases/latest/download/latest.json` 可直接获取，内容指向 `v1.7.7`。
+
 ### 2026-10-11（同步上游 v1.7.6）
 
 - 上游已发布 `v1.7.6`，`main` 推进到 `f035c3c`；确认 PR #2425 仍未合并，上游依旧对所有 `encrypted_content` 直接拒绝，因此 fork 补丁继续保留。
