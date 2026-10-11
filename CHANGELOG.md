@@ -1,5 +1,14 @@
 # 更新日志
 
+## 1.7.7 - 2026-10-11
+
+本版把 fork 同步到上游 `v1.7.6`（`f035c3c`），保留上游全部新能力，并继续携带下面的 fork 补丁。
+
+- 修复 Chat Completions 上游报 `unsupported_encrypted_agent_content`：`agent_message` 内明文 `encrypted_content` payload 按原顺序转换为 Chat 文本，不再直接拒绝。
+- v2 自定义模型（`multiAgentVersion: v2`）自动暴露 `ultra` 推理档位；Chat Completions 方言收到 `ultra` 时兜底映射为 `max`（OpenRouter 为 `xhigh`），不再把 `ultra` 原样发给不支持的上游。
+- 安全边界不变：无法在 Chat 协议中表达的 opaque 加密内容与独立 `encrypted_content` 项仍明确报错，不静默丢弃。
+- 同步上游 1.7.6：Claude Code 动态汉化管理、本地 SenseVoiceSmall INT8 语音转写、纯 API provider 鉴权 401 修复、插件下载代理继承、Fast 逐模型声明、原生搜索拦截与压缩历史处理加固。
+
 ## Fork 补丁（本仓库独有）
 
 以下改动不来自上游 `BigPizzaV3/CodexPlusPlus`，与上游同步时需要重新叠加：
