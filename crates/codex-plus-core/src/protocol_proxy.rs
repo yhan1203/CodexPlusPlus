@@ -6825,7 +6825,7 @@ fn map_chat_reasoning_effort(effort: &str, style: ChatReasoningStyle) -> Option<
 
     match style {
         ChatReasoningStyle::DeepSeek => match effort.as_str() {
-            "max" | "xhigh" => Some("max"),
+            "max" | "xhigh" | "ultra" => Some("max"),
             _ => Some("high"),
         },
         ChatReasoningStyle::LowHigh => match effort.as_str() {
@@ -6833,7 +6833,7 @@ fn map_chat_reasoning_effort(effort: &str, style: ChatReasoningStyle) -> Option<
             _ => Some("high"),
         },
         ChatReasoningStyle::OpenRouter => match effort.as_str() {
-            "max" | "xhigh" => Some("xhigh"),
+            "max" | "xhigh" | "ultra" => Some("xhigh"),
             "high" => Some("high"),
             "medium" => Some("medium"),
             "low" => Some("low"),
@@ -6841,11 +6841,11 @@ fn map_chat_reasoning_effort(effort: &str, style: ChatReasoningStyle) -> Option<
             _ => None,
         },
         // Kimi For Coding 官方映射: minimal/low→low, medium/high→high,
-        // xhigh/max→max。注意不能直接透传 "minimal", 服务端不认会 400。
+        // xhigh/max/ultra→max。注意不能直接透传 "minimal", 服务端不认会 400。
         ChatReasoningStyle::Thinking => match effort.as_str() {
             "minimal" | "low" => Some("low"),
             "medium" | "high" => Some("high"),
-            "xhigh" | "max" => Some("max"),
+            "xhigh" | "max" | "ultra" => Some("max"),
             _ => None,
         },
         _ => match effort.as_str() {
@@ -6855,6 +6855,7 @@ fn map_chat_reasoning_effort(effort: &str, style: ChatReasoningStyle) -> Option<
             "high" => Some("high"),
             "xhigh" => Some("xhigh"),
             "max" => Some("max"),
+            "ultra" => Some("ultra"),
             _ => None,
         },
     }

@@ -359,6 +359,12 @@ https://github.com/yhan1203/CodexPlusPlus/releases/latest/download/latest.json
 
 ## 10. 修订记录
 
+### 2026-10-11
+
+- 补齐 `ultra` 推理档位的协议映射：通用上游透传 `ultra`，DeepSeek/Kimi 映射为 `max`，OpenRouter 映射为 `xhigh`。
+- 新增 `responses_request_maps_ultra_reasoning_effort` 回归测试；`protocol_proxy` 150 例通过。
+- 未修改 UI 默认档位，避免给不支持 `ultra` 的模型强塞选项；仅为已经存在该档位的模型补齐转发。
+
 ### 2026-10-09
 
 - 定位 1.6.0 与 1.7.1 行为差异：前者静默丢弃，后者显式拒绝。

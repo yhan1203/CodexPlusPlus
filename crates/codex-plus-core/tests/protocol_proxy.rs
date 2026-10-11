@@ -928,6 +928,42 @@ fn responses_request_applies_ccswitch_reasoning_dialects() {
 }
 
 #[test]
+fn responses_request_maps_ultra_reasoning_effort() {
+    let gpt = responses_to_chat_completions(json!({
+        "model": "gpt-5.4",
+        "reasoning": { "effort": "ultra" },
+        "input": "hi"
+    }))
+    .unwrap();
+    assert_eq!(gpt["reasoning_effort"], "ultra");
+
+    let deepseek = responses_to_chat_completions(json!({
+        "model": "deepseek-reasoner",
+        "reasoning": { "effort": "ultra" },
+        "input": "hi"
+    }))
+    .unwrap();
+    assert_eq!(deepseek["reasoning_effort"], "max");
+
+    let openrouter = responses_to_chat_completions(json!({
+        "model": "openrouter/deepseek/deepseek-r1",
+        "reasoning": { "effort": "ultra" },
+        "input": "hi"
+    }))
+    .unwrap();
+    assert_eq!(openrouter["reasoning"]["effort"], "xhigh");
+    assert!(openrouter.get("reasoning_effort").is_none());
+
+    let kimi = responses_to_chat_completions(json!({
+        "model": "k3-256k",
+        "reasoning": { "effort": "ultra" },
+        "input": "hi"
+    }))
+    .unwrap();
+    assert_eq!(kimi["reasoning_effort"], "max");
+}
+
+#[test]
 fn responses_request_maps_kimi_coding_reasoning_effort_per_official_spec() {
     // 官方映射 (kimi.com/code/docs): K3 接受 reasoning_effort low/high/max,
     // Codex 档位 minimal/low→low, medium/high→high, xhigh/max→max。
