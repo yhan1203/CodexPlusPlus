@@ -3664,6 +3664,9 @@ fn injection_script_applies_fast_service_tier_contract() {
         cases["solDescriptor"]["supportedReasoningEfforts"][5]["reasoningEffort"],
         "ultra"
     );
+    assert_eq!(cases["customV2ModelGetsUltra"], true);
+    assert_eq!(cases["customV1ModelKeepsNoUltra"], false);
+    assert_eq!(cases["customUnknownModelKeepsNoUltra"], false);
     assert_eq!(cases["dispatcherFromSingleton"], true);
     assert_eq!(cases["dispatcherFromCurrentSingleton"], true);
     assert_eq!(cases["dispatcherFromClass"], true);
@@ -4002,6 +4005,40 @@ api.setModelCatalog({{
   }},
 }});
 const solDescriptor = api.modelDescriptor("gpt-5.6-sol");
+api.setModelCatalog({{
+  status: "ok",
+  model: "kimi-k3",
+  default_model: "kimi-k3",
+  models: ["kimi-k3"],
+  modelMetadata: {{
+    "kimi-k3": {{
+      displayName: "Kimi K3",
+      description: "Custom Kimi K3.",
+      defaultReasoningEffort: "high",
+      supportedReasoningEfforts: ["low", "high", "max"].map((reasoningEffort) => ({{ reasoningEffort }})),
+    }},
+  }},
+}});
+const v2CustomModel = {{
+  model: "kimi-k3",
+  multiAgentVersion: "v2",
+  supportedReasoningEfforts: ["low", "high", "max"].map((reasoningEffort) => ({{ reasoningEffort }})),
+}};
+api.patchModelArray([v2CustomModel], true, "local");
+const customV2ModelGetsUltra = v2CustomModel.supportedReasoningEfforts.some((entry) => entry.reasoningEffort === "ultra");
+const v1CustomModel = {{
+  model: "kimi-k3",
+  multiAgentVersion: "v1",
+  supportedReasoningEfforts: ["low", "high", "max"].map((reasoningEffort) => ({{ reasoningEffort }})),
+}};
+api.patchModelArray([v1CustomModel], true, "local");
+const customV1ModelKeepsNoUltra = v1CustomModel.supportedReasoningEfforts.some((entry) => entry.reasoningEffort === "ultra");
+const unknownCustomModel = {{
+  model: "kimi-k3",
+  supportedReasoningEfforts: ["low", "high", "max"].map((reasoningEffort) => ({{ reasoningEffort }})),
+}};
+api.patchModelArray([unknownCustomModel], true, "local");
+const customUnknownModelKeepsNoUltra = unknownCustomModel.supportedReasoningEfforts.some((entry) => entry.reasoningEffort === "ultra");
 const singletonDispatcher = {{ dispatchMessage() {{}}, subscribe() {{}} }};
 const dispatcherFromSingleton = api.dispatcherFromModule({{ current: singletonDispatcher }}) === singletonDispatcher;
 const currentSingletonDispatcher = {{ dispatchMessage() {{}}, subscribe() {{}} }};
@@ -4726,6 +4763,9 @@ process.stdout.write(JSON.stringify({{
   fetchSendCliRequest,
   solFastAvailability,
   solDescriptor,
+  customV2ModelGetsUltra,
+  customV1ModelKeepsNoUltra,
+  customUnknownModelKeepsNoUltra,
   dispatcherFromSingleton,
   dispatcherFromCurrentSingleton,
   dispatcherFromClass,

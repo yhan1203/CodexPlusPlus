@@ -6855,7 +6855,9 @@ fn map_chat_reasoning_effort(effort: &str, style: ChatReasoningStyle) -> Option<
             "high" => Some("high"),
             "xhigh" => Some("xhigh"),
             "max" => Some("max"),
-            "ultra" => Some("ultra"),
+            // Codex 客户端会在发请求前把 Ultra 解析成具体 effort；
+            // 若代理仍收到原样 ultra，按官方兜底规则收敛到 max。
+            "ultra" => Some("max"),
             _ => None,
         },
     }
